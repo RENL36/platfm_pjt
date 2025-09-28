@@ -1,9 +1,8 @@
-#communication ssh entre hote et giver/clients pour donner des ordres
-#comment faire en sorte qu'un conteneur appartienne à un client ?
-/*1 client fait une demande au giver - il lui réserve un conteneur*/
-pour créer cette situation, créer des fichiers sur les vm dont je vais lancer l'execution depuis la machine hôte*/
-/*giver: docker run -d -p 8080:80 app
-  client: curl http://192.168.1.50:8080*/
+#comment faire en sorte qu'un conteneur appartienne à un client ? n° port
+/*situation : 1 client fait une demande au giver - le giver lui envoie un numéro de port via lequel il pourra accéder à l'application d'un conteneur
+pour créer cette situation, créer des scripts sur les vm dont je vais lancer l'execution depuis la machine hôte via ssh
+NB: pour executer une commande sur une vm, 2 choix : communication ssh une fois la vm lancée ou script bash que je peux lancer dès l'exécution de la vm ou après (via ssh)*/
+#verification client: curl http://192.168.1.50:8080 (fin du script)*/
 
 #définition des acteurs + spécification réseau
 ACTORS = {
@@ -32,6 +31,7 @@ end
 #configuration de giver
   #installation de Docker
   #creation de conteneurs
+  #lancement des conteneurs - docker run -d -p 8080:80 app 
 
 #configuration de clientA
 
