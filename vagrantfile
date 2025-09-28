@@ -3,7 +3,7 @@
 pour créer cette situation, créer des scripts (bash/python ?) sur les vm dont je vais lancer l'execution depuis la machine hôte via ssh
 NB: pour executer une commande sur une vm, 2 choix : communication ssh une fois la vm lancée ou script bash que je peux lancer dès l'exécution de la vm ou après (via ssh)*/
 #verification client: curl http://192.168.1.50:8080 (fin du script)
-#installer python ? 
+#installer python sur les vm ? 
 
 #définition des acteurs + spécification réseau
 ACTORS = {
