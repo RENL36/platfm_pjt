@@ -1,0 +1,39 @@
+#communication ssh entre hote et giver/clients pour donner des ordres
+#comment faire en sorte qu'un conteneur appartienne à un client ?
+/*1 client fait une demande au giver - il lui réserve un conteneur*/
+pour créer cette situation, créer des fichiers sur les vm dont je vais lancer l'execution depuis la machine hôte*/
+/*giver: docker run -d -p 8080:80 app
+  client: curl http://192.168.1.50:8080*/
+
+#définition des acteurs + spécification réseau
+ACTORS = {
+  'giver' => {
+    ip: '192.168.56.10',
+    #mapage port hote/giver
+    ports: { 6379 => 6379 }
+  },
+  'clientA' => {
+    ip: '192.168.56.11',
+    ports: { 8080 => 8080 }
+  },
+  'clientB' => {
+    ip: '192.168.56.12',
+    ports: { 8081 => 8081 }
+  }
+}
+
+#spécification de la box (image) pour créer les vm
+Vagrant.configure("2") do |config|
+  # Common configuration
+  config.vm.box = "hashicorp-education/ubuntu-24-04"
+  config.vm.box_version = "0.1.0"
+end
+
+#configuration de giver
+  #installation de Docker
+  #creation de conteneurs
+
+#configuration de clientA
+
+#configuration de clientB
+
