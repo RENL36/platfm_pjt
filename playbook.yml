@@ -1,0 +1,97 @@
+---
+- name: configuration hôte
+  hosts: localhost
+  become: true
+  #module ansible pour gérer des conteneurs
+  collections:
+    - community.docker
+
+  vars:
+    nginx_sites:
+      - name: container1
+        port: 8081
+      - name: container2
+        port: 8082
+      - name: container3
+        port: 8083
+    mysql_root_password: "azerty"
+    mysql_db_name: "base"
+    
+
+  tasks:
+    - name: créer + démarrer plusieurs conteneurs web
+      docker_container:
+        name: "{{ item.name }}"
+        image: nginx:latest
+        state: started
+        ports:
+          - "{{ item.port }}:80"
+        restart_policy: always
+      loop: "{{ nginx_sites }}"
+
+    #créer bdd + créer une table conteneurs + la remplir
+    #installation dans le vagrantfile?
+    - name: installer serveur MySQL
+      apt:
+        name: mariadb-server
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: s'assurer que MySQL est démarré
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: définir le mot de passe root MySQL 
+      mysql_user:
+        login_user: root
+        login_password: ""
+        user: root
+        password: "{{ mysql_root_password }}"
+        host_all: true
+      ignore_errors: yes  # utile au premier run
+
+    - name: créer la BDD
+      community.mysql.mysql_db:
+        name: "{{ mysql_db_name }}"
+        state: present
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+
+    - name: créer la table conteneurs
+      community.mysql.mysql_query:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        db: "{{ mysql_db_name }}"
+        query: |
+          CREATE TABLE IF NOT EXISTS containers (
+              container_id INT AUTO_INCREMENT PRIMARY KEY,
+              container_name VARCHAR(100) NOT NULL,
+              container_port  VARCHAR(100) NOT NULL,
+              user_id INT,
+              FOREIGN_KEY(user_id) REFERENCES USERS(user_id)
+          );
+    - name: insertion des conteneurs dans la table
+      community.mysql.mysql_query:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        db: "{{ mysql_db_name }}"
+        query: 
+          INSERT INTO containers(container_name, container_port, user_id) VALUES
+          ('{{ item.name }}','{{ item.port }}',-1),
+        loop: "{{ nginx_sites }}"
+
+    - name: créer la table users
+      community.mysql.mysql_query:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        db: "{{ mysql_db_name }}"
+        query: |
+          CREATE TABLE IF NOT EXISTS users (
+          container_id INT AUTO_INCREMENT PRIMARY KEY,
+            
+              
+          );
+          
+
