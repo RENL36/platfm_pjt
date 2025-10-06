@@ -1,36 +1,18 @@
 #comment faire en sorte qu'un conteneur appartienne à un client ? n° port
-/*situation : 1 client fait une demande au giver - le giver lui envoie un numéro de port via lequel il pourra accéder à l'application d'un conteneur
-pour créer cette situation, créer des scripts (bash/python ?) sur les vm dont je vais lancer l'execution depuis la machine hôte via ssh
-NB: pour executer une commande sur une vm, 2 choix : communication ssh une fois la vm lancée ou script bash que je peux lancer dès l'exécution de la vm ou après (via ssh)*/
-#verification client: curl http://192.168.1.50:8080 (fin du script)
-#installer python sur les vm ? 
+/*situation : 1 client fait une demande au giver - le giver lui envoie un numéro de port via lequel il pourra accéder à l'application d'un conteneur*/
 
-#définition des acteurs + spécification réseau
-ACTORS = {
-  'giver' => {
-    ip: '192.168.56.10',
-  },
-  'clientA' => {
-    ip: '192.168.56.11',
-  },
-  'clientB' => {
-    ip: '192.168.56.12',
-  }
-}
 
-#spécification de la box (image) pour créer les vm
+#spécification de la box (image) pour créer la vm
 Vagrant.configure("2") do |config|
   # Common configuration
   config.vm.box = "hashicorp-education/ubuntu-24-04"
   config.vm.box_version = "0.1.0"
 end
 
-#configuration de giver
+#configuration de la vm
   #installation de Docker
   #creation de conteneurs
   #lancement des conteneurs - docker run -d -p 8080:80 app 
 
-#configuration de clientA
 
-#configuration de clientB
 
