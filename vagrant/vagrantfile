@@ -2,6 +2,7 @@
 /*situation : 1 client fait une demande au giver - le giver lui envoie un numéro de port via lequel il pourra accéder à l'application d'un conteneur*/
 /*problématique : lien .yaml + vagrantfile ?*/
 
+
 #spécification de la box (image) pour créer la vm
 Vagrant.configure("2") do |config|
   # Common configuration
@@ -9,11 +10,10 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = "0.1.0"
 end
 
-
 #installer Docker 
   config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
 
-#installer Ansible 
+#installer Ansible + exécution fichier.yaml
   config.vm.provision "shell", name: "install-ansible", path: "install-ansible.sh"
 
 
