@@ -1,5 +1,5 @@
 ---
-- name: configuration hôte
+- name: execution des taches
   hosts: all
   connexion: local
 
@@ -27,19 +27,6 @@
       loop: "{{ nginx_sites }}"
 
     #créer bdd + créer une table conteneurs + la remplir
-    #installation dans le vagrantfile?
-    - name: installer serveur MySQL
-      apt:
-        name: mariadb-server
-        state: present
-      when: ansible_os_family == "Debian"
-
-    - name: s'assurer que MySQL est démarré
-      service:
-        name: mariadb
-        state: started
-        enabled: yes
-
     - name: définir le mot de passe root MySQL 
       mysql_user:
         login_user: root
@@ -69,7 +56,7 @@
               user_id INT,
               FOREIGN_KEY(user_id) REFERENCES USERS(user_id)
           );
-    - name: insertion des conteneurs dans la table
+    - name: insertion des données des conteneurs dans la table
       community.mysql.mysql_query:
         login_user: root
         login_password: "{{ mysql_root_password }}"
@@ -79,6 +66,7 @@
           ('{{ item.name }}','{{ item.port }}',-1),
         loop: "{{ nginx_sites }}"
 
+    #à compléter
     - name: créer la table users
       community.mysql.mysql_query:
         login_user: root
@@ -91,5 +79,6 @@
               
           );
           
+
 
 
