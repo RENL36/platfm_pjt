@@ -18,10 +18,6 @@ end
 
 
 
-#configuration de la vm
-  #installation de Docker
-  #creation de conteneurs
-  #lancement des conteneurs - docker run -d -p 8080:80 app 
 
 
 
