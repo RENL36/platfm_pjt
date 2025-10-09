@@ -4,5 +4,6 @@ S/ machine hôte, exécuter Vagrantfile
    => création + configuration de la VM (installation services = Ansible, Docker... (Apache2?, MySQL?))
    => lance s/ la VM exécution fichier.yaml (via logiciel Ansible) => crée conteneurs, crée la BDD...
    (prof a dit que utilisation Ansible nécessaire mais ce qui est ds fichier .yaml pourrait être ds vagrantfile, pq Ansible ?
-   Ansible => gestion des conteneurs (expiration réservation...) + != comptes s/ appli ds conteneurs)
+   Ansible => gestion des conteneurs (expiration réservation...) + != comptes s/ appli ds conteneurs
+   vagrantfile => installation services ; fichier .yaml => execution des taches)
    
