@@ -10,9 +10,11 @@ Vagrant.configure("2") do |config|
 end
 
 
+#installer Docker 
+  config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
 
-# Install Docker and dependencies
-  config.vm.provision "shell", name: "install-dependencies", path: "install-dependencies.sh
+#installer Ansible 
+  config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
 
 
 
