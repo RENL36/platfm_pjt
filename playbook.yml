@@ -1,10 +1,7 @@
 ---
 - name: configuration hôte
-  hosts: localhost
-  become: true
-  #module ansible pour gérer des conteneurs
-  collections:
-    - community.docker
+  hosts: all
+  connexion: local
 
   vars:
     nginx_sites:
@@ -94,4 +91,5 @@
               
           );
           
+
 
