@@ -14,7 +14,7 @@ end
   config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
 
 #installer Ansible 
-  config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
+  config.vm.provision "shell", name: "install-ansible", path: "install-ansible.sh"
 
 
 
