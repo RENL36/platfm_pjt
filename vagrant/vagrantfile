@@ -1,20 +1,27 @@
 #comment faire en sorte qu'un conteneur appartienne à un client ? n° port
-/*situation : 1 client fait une demande au giver - le giver lui envoie un numéro de port via lequel il pourra accéder à l'application d'un conteneur*/
-/*problématique : lien .yaml + vagrantfile ?*/
+#situation : 1 client fait une demande au giver - le giver lui envoie un numéro de port via lequel il #pourra accéder à l'application d'un conteneur
+#problématique : lien .yaml + vagrantfile ?
 
+
+$script = <<-'SCRIPT'
+apt-get update -y
+apt-get install -y ansible 
+SCRIPT
 
 #spécification de la box (image) pour créer la vm
 Vagrant.configure("2") do |config|
   # Common configuration
   config.vm.box = "hashicorp-education/ubuntu-24-04"
   config.vm.box_version = "0.1.0"
-end
 
 #installer Docker 
   config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
 
-#installer Ansible + exécution fichier.yaml
-  config.vm.provision "shell", name: "install-ansible", path: "install-ansible.sh"
+#installer Ansible 
+  config.vm.provision "shell", inline: $script
+
+end
+
 
 
 
