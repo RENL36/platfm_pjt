@@ -9,6 +9,13 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = "0.1.0"
 end
 
+
+
+# Install Docker and dependencies
+  config.vm.provision "shell", name: "install-dependencies", path: "install-dependencies.sh
+
+
+
 #configuration de la vm
   #installation de Docker
   #creation de conteneurs
