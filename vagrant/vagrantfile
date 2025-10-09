@@ -29,6 +29,8 @@ Vagrant.configure("2") do |config|
 #installer Apache
   config.vm.provision "shell", inline: $script3
 
+#execution de playbook.yml
+  config.vm.provision "shell", inline: "ansible-playbook -i localhost, playbook.yaml"
 
 end
 
