@@ -2,35 +2,59 @@
 #situation : 1 client fait une demande au giver - le giver lui envoie un numéro de port via lequel il #pourra accéder à l'application d'un conteneur
 #installation services
 
-$script1 = <<-'SCRIPT'
+$script1 = <<-SCRIPT
 apt-get update -y
-apt-get install -y ansible 
+apt-get install -y ansible-core
 SCRIPT
 
-$script2 = 
 
-$script3 =
 
+$script3 = <<-SCRIPT 
+sudo apt-get update -y
+sudo apt-get install apache2 -y
+SCRIPT
 #spécification de la box (image) pour créer la vm
 Vagrant.configure("2") do |config|
   # Common configuration
   config.vm.box = "hashicorp-education/ubuntu-24-04"
   config.vm.box_version = "0.1.0"
+  config.vm.network "forwarded_port", guest: 80, host: 8080
 
 #installer Docker 
   config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
 
 #installer Ansible -> ne marche pas 
-  config.vm.provision "shell", inline: $script1
+ config.vm.provision "shell", inline: $script1
 
-#installer MySQL
-  config.vm.provision "shell", inline: $script2
+config.vm.provision "shell", inline: <<-SHELL
+    echo "[INFO] Mise à jour du système..."
+    sudo apt-get update -y
+
+    echo "[INFO] Préparation installation MySQL sans prompt..."
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server
+
+    echo "[INFO] Démarrage de MySQL..."
+    sudo systemctl enable mysql
+    sudo systemctl start mysql
+
+    echo "[INFO] Configuration du mot de passe root..."
+    sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
+    sudo mysql -e "FLUSH PRIVILEGES;"
+
+    echo "[INFO] Suppression des utilisateurs anonymes et base test..."
+    sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
+    sudo mysql -e "DROP DATABASE IF EXISTS test;"
+    sudo mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+    sudo mysql -e "FLUSH PRIVILEGES;"
+
+    echo "[INFO] Installation de MySQL terminée avec succès."
+  SHELL
 
 #installer Apache
   config.vm.provision "shell", inline: $script3
 
 #execution de playbook.yml
-  config.vm.provision "shell", inline: "ansible-playbook -i localhost, playbook.yaml"
+  #config.vm.provision "shell", inline: "ansible-playbook -i localhost, playbook.yaml"
 
 end
 
