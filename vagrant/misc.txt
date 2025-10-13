@@ -1,0 +1,5 @@
+Structure de webapp différente de main : c'est le vagrantfile qui initialise la bdd.
+A voir s'il faut nécessairement que ce soit ansible qui le fasse
+
+Prochain commit ce soir avec lien entre bdd et web fonctionnel.
+Quelques corrections à faire avant
