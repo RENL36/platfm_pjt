@@ -35,10 +35,10 @@ config.vm.provision "file", source: "webapp/index.php", destination: "/var/www/h
 
 
 config.vm.provision "shell", inline: "test -d /home/vagrant/ansible || mkdir /home/vagrant/ansible"
-config.vm.provision "file", source: "playbook.yml", destination: "/tmp/playbook.yml"
-config.vm.provision "file", source: "inventory.ini", destination: "/tmp/inventory.ini"
-config.vm.provision "shell", inline: "mv /tmp/playbook.yml /home/vagrant/ansible/playbook.yml"
-config.vm.provision "shell", inline: "mv /tmp/inventory.ini /home/vagrant/ansible/inventory.ini"
+config.vm.provision "file", source: "playbook.yml", destination: "/home/vagrant/ansible/playbook.yml"
+#inventory pas nécessaire -> on peut le supp
+config.vm.provision "file", source: "inventory.ini", destination: "/home/vagrant/ansible/inventory.ini"
+
 
 #execution de playbook.yml
   config.vm.provision "shell", inline: "ansible-playbook -i /home/vagrant/ansible/inventory.ini /home/vagrant/ansible/playbook.yml"
