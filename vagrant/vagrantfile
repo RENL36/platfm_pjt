@@ -55,7 +55,7 @@ config.vm.provision "shell", inline: <<-SHELL
 
 #execution de playbook.yml
   #copie dans la vm
-  #config.vm.provision "shell", inline: "ansible-playbook -i localhost, playbook.yaml"
+  config.vm.provision "shell", inline: "ansible-playbook -i localhost, playbook.yaml"
 
 end
 
