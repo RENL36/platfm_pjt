@@ -1,7 +1,7 @@
 ---
-- name: execution des taches
+- name: configuration hôte
   hosts: all
-  connexion: local
+  connection: local
 
   vars:
     nginx_sites:
@@ -27,6 +27,17 @@
       loop: "{{ nginx_sites }}"
 
     #créer bdd + créer une table conteneurs + la remplir
+    #installation dans le vagrantfile?
+    - name: installer serveur MySQL
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: installer connecteur python
+      apt:
+        name: python3-mysqldb
+        state: present
+
     - name: définir le mot de passe root MySQL 
       mysql_user:
         login_user: root
@@ -47,38 +58,34 @@
       community.mysql.mysql_query:
         login_user: root
         login_password: "{{ mysql_root_password }}"
-        db: "{{ mysql_db_name }}"
+        login_db: "{{ mysql_db_name }}"
         query: |
           CREATE TABLE IF NOT EXISTS containers (
               container_id INT AUTO_INCREMENT PRIMARY KEY,
               container_name VARCHAR(100) NOT NULL,
-              container_port  VARCHAR(100) NOT NULL,
-              user_id INT,
-              FOREIGN_KEY(user_id) REFERENCES USERS(user_id)
+              container_port  VARCHAR(100) NOT NULL
           );
-    - name: insertion des données des conteneurs dans la table
+
+    - name: insertion des conteneurs dans la table
       community.mysql.mysql_query:
         login_user: root
         login_password: "{{ mysql_root_password }}"
-        db: "{{ mysql_db_name }}"
-        query: 
-          INSERT INTO containers(container_name, container_port, user_id) VALUES
-          ('{{ item.name }}','{{ item.port }}',-1),
-        loop: "{{ nginx_sites }}"
+        login_db: "{{ mysql_db_name }}"
+        query: |
+            INSERT INTO containers(container_name, container_port) VALUES
+            ('{{ item.name }}','{{ item.port }}')
+      loop: "{{ nginx_sites }}"
 
-    #à compléter
     - name: créer la table users
       community.mysql.mysql_query:
         login_user: root
         login_password: "{{ mysql_root_password }}"
-        db: "{{ mysql_db_name }}"
+        login_db: "{{ mysql_db_name }}"
         query: |
           CREATE TABLE IF NOT EXISTS users (
-          container_id INT AUTO_INCREMENT PRIMARY KEY,
-            
-              
+          user_id INT AUTO_INCREMENT PRIMARY KEY,
+          user_name VARCHAR(100) NOT NULL,
+          user_firstname VARCHAR(100) NOT NULL,
+          container_id INT,
+          FOREIGN KEY(container_id) REFERENCES containers(container_id)   
           );
-          
-
-
-
