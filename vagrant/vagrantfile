@@ -4,10 +4,11 @@
 
 $script1 = <<-SCRIPT
 apt-get update -y
-apt-get install -y ansible-core apache2 php libapache2-mod-php mysql-server python3-pip
+apt-get install -y ansible-core apache2 php libapache2-mod-php php-mysql mysql-server python3-pip
 ansible-galaxy collection install community.mysql
 sudo systemctl enable mysql
 apt-get install python3-pip -y
+apt-get install inotify-tools -y
 SCRIPT
 
 
@@ -18,9 +19,17 @@ Vagrant.configure("2") do |config|
   # Common configuration
   config.vm.box = "hashicorp-education/ubuntu-24-04"
   config.vm.box_version = "0.1.0"
-  # pourquoi config.vm.network ?
+
+  #Les forwarded ports aident pour tester que ça fonctionne à partir du pc hôte
+  # il suffit de lancer localhost:8080 dans le navigateur du pc hôte pour accéder au serveur web -> index.php
+>>>>>>> 4b0692c (v0.1 lancement automatique de conteneurs)
   config.vm.network "forwarded_port", guest: 80, host: 8080
-  config.vm.network "forwarded_port", guest: 3000, host: 3000
+
+  #On peut aussi faire avec public network : http://192.168.1.15:8080
+  #Aussi on peut accéder à chaque conteneur avec http://192.168.1.15:port_du_conteneur
+  config.vm.network "public_network", ip: "192.168.1.15"
+
+
 
 #installer Docker 
   config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
@@ -36,13 +45,21 @@ config.vm.provision "file", source: "webapp/index.php", destination: "/var/www/h
 
 
 config.vm.provision "shell", inline: "test -d /home/vagrant/ansible || mkdir /home/vagrant/ansible"
+
 config.vm.provision "file", source: "playbook.yml", destination: "/home/vagrant/ansible/playbook.yml"
-#inventory pas nécessaire -> on peut le supp
+
 config.vm.provision "file", source: "inventory.ini", destination: "/home/vagrant/ansible/inventory.ini"
 
 
+config.vm.provision "file", source: "playbook.yml", destination: "/tmp/playbook.yml"
+config.vm.provision "file", source: "inventory.ini", destination: "/tmp/inventory.ini"
+# 2 étapes pour déplacer les fichiers car sinon il y avait des problèmes de permissions
+# Pour l'inventory il est possible que plus tard on ait besoin de lui ajouter les conteneurs pour les configurer avec ansible (je suis absolument pas sûr)
+config.vm.provision "shell", inline: "mv /tmp/playbook.yml /home/vagrant/ansible/playbook.yml"
+config.vm.provision "shell", inline: "mv /tmp/inventory.ini /home/vagrant/ansible/inventory.ini"
+
 #execution de playbook.yml
-  config.vm.provision "shell", inline: "ansible-playbook -i /home/vagrant/ansible/inventory.ini /home/vagrant/ansible/playbook.yml"
+  config.vm.provision "shell", inline: "ansible-playbook -i /home/vagrant/ansible/inventory.ini /home/vagrant/ansible/playbook.yml --extra-vars 'first_run=true'"
 
 end
 

@@ -7,28 +7,43 @@
     mysql_db_name: "manage_clients_db"
     
 
+
+
   tasks:
-    - name: créer + démarrer plusieurs conteneurs web
+
+
+    - name: lire le fichier json
+      ansible.builtin.slurp:
+        src: /var/www/html/users_containers.json
+      register: json_file
+      when: first_run is not defined
+
+
+    - name: afficher le contenu du fichier json
+      debug:
+        msg: "{{ json_file.content | b64decode }}"
+      when: first_run is not defined
+
+    - name: extraire les ports
+      set_fact:
+        port_numbers: "{{ json_file.content | b64decode | from_json | map(attribute='container_port') | list }}"
+      when: first_run is not defined
+
+
+
+    - name: afficher les ports actifs
+      debug:
+        msg: "{{ port_numbers }}" 
+      when: first_run is not defined
+
+    - name: démarrer les nouveaux conteneurs
       docker_container:
-        name: getting-started
-        image: docker/getting-started
+        name: "container_{{ item }}"
+        image: "docker/getting-started"
         state: started
-        published_ports: 3000:80
-        restart_policy: always
-      loop:
-
-
-      #Ne fonctionne pas, il faut récupérer les données autrement
-    - name: Récupérer données bdd
-      community.mysql.mysql_query:
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-        login_db: "{{ mysql_db_name }}"
-        query: "SHOW TABLES;"
-      register: db_query_result
-
-
-   
-
+        published_ports:
+          - "{{ item }}:80"
+      loop: "{{ port_numbers }}"
+      when: first_run is not defined and port_numbers | length > 0
 
 

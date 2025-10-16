@@ -1,0 +1,6 @@
+Commande à exécuter au début du lancement de la vm : 
+while inotifywait -e close_write /var/www/html/users_containers.json; do ansible-playbook -i /home/vagrant/ansible/inventory.ini /home/vagrant/ansible/playbook.yml; done
+
+Permet de relancer playbook à chaque nouvelle entrée dans mysql (lance nouveau conteneur)
+La vraie manière de faire ne doit pas être ça car relancer un playbook n'est pas naturel
+A voir avec prof

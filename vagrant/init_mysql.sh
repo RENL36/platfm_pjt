@@ -1,10 +1,11 @@
 #Page par défaut de apache à supprimer pour mettre à la place index.php
 sudo rm /var/www/html/index.html
-
+sudo chmod -R 777 /var/www/html
 #mdp pour root (nécessaire pour se connecter avec mysqli)
 if ! sudo mysql -u root -pazerty -e "SELECT User, plugin FROM mysql.user WHERE User='root' AND plugin='mysql_native_password';" | grep -q 'root'; then
     sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'azerty'; FLUSH PRIVILEGES;"
 fi
+
 
 sudo mysql -u root -pazerty -e "
 CREATE DATABASE IF NOT EXISTS manage_clients_db;
