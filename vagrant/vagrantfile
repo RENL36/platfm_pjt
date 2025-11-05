@@ -1,5 +1,4 @@
-#comment faire en sorte qu'un conteneur appartienne à un client ? n° port
-#situation : 1 client fait une demande au giver - le giver lui envoie un numéro de port via lequel il #pourra accéder à l'application d'un conteneur
+
 #installation services
 
 $script1 = <<-SCRIPT
@@ -23,32 +22,8 @@ Vagrant.configure("2") do |config|
 #installer Docker 
   config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
 
-#installer Ansible -> ne marche pas 
  config.vm.provision "shell", inline: $script1
 
-config.vm.provision "shell", inline: <<-SHELL
-    echo "[INFO] Mise à jour du système..."
-    sudo apt-get update -y
-
-    echo "[INFO] Préparation installation MySQL sans prompt..."
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server
-
-    echo "[INFO] Démarrage de MySQL..."
-    sudo systemctl enable mysql
-    sudo systemctl start mysql
-
-    echo "[INFO] Configuration du mot de passe root..."
-    sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';"
-    sudo mysql -e "FLUSH PRIVILEGES;"
-
-    echo "[INFO] Suppression des utilisateurs anonymes et base test..."
-    sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
-    sudo mysql -e "DROP DATABASE IF EXISTS test;"
-    sudo mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
-    sudo mysql -e "FLUSH PRIVILEGES;"
-
-    echo "[INFO] Installation de MySQL terminée avec succès."
-  SHELL
 
 #installer Apache
   config.vm.provision "shell", inline: $script3
