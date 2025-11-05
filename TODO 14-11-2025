@@ -1,3 +1,5 @@
+A faire sur la branche main
+
 On a une VM dont la configuration est faite par Vagrant (fichier Vagrantfile). Un serveur web est installé sur cette machine. Les clients s'y connectent pour demander des conteneurs.
 La VM attribue automatiquement le bon nombre de conteneurs.
 
