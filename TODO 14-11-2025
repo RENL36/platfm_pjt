@@ -17,6 +17,8 @@ Envoi de nom d'utilisateur, mdp du client et numéro de port du conteneur sur la
 
 - 1 pour la gestion des conteneurs : création / suppression de comptes des clients (car un client a accès à un conteneur pour une durée limitée)
 Les conteneurs sont préférablement des images d'un OS (Ubuntu par ex) et sont en cours d'exécution tant que la VM est en cours d'exécution. Il faut choisir le nombre de conteneurs possédés arbitrairement.
+A demander : plusieurs utilisateurs pourraient avoir accès à un même conteneur
+
 
 3) Idéalement ajouter du style au serveur web
 
