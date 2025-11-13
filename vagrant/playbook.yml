@@ -4,7 +4,7 @@
   connection: local
 
   vars:
-    nginx_sites:
+    ubuntu_containers :
       - name: container1
         port: 2221
       - name: container2
@@ -30,7 +30,7 @@
         ports:
           - "{{ item.port }}:22"
         restart_policy: always
-        loop: "{{ nginx_sites }}"  
+        loop: "{{ ubuntu_containers }}"  
 
     #créer bdd + créer une table conteneurs + la remplir
     #installation dans le vagrantfile?
@@ -80,7 +80,7 @@
         query: |
             INSERT INTO containers(container_name, container_port) VALUES
             ('{{ item.name }}','{{ item.port }}')
-      loop: "{{ nginx_sites }}"
+      loop: "{{ ubuntu_containers }}"
 
     - name: créer la table users
       community.mysql.mysql_query:
@@ -95,4 +95,5 @@
           container_id INT,
           FOREIGN KEY(container_id) REFERENCES containers(container_id)   
           );
+
 
