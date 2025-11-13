@@ -6,25 +6,31 @@
   vars:
     nginx_sites:
       - name: container1
-        port: 8081
+        port: 2221
       - name: container2
-        port: 8082
+        port: 2222
       - name: container3
-        port: 8083
+        port: 2223
     mysql_root_password: "azerty"
     mysql_db_name: "base"
     
 
   tasks:
-    - name: créer + démarrer plusieurs conteneurs web
-      docker_container:
+
+    - name: Build Docker image from Dockerfile
+      community.docker.docker_image:
+        path: .
+        name: ubuntu-ssh
+    
+    - name: démarrer plusieurs conteneurs 
+      community.docker.docker_container:
         name: "{{ item.name }}"
-        image: nginx:latest
+        image: ubuntu-ssh
         state: started
         ports:
-          - "{{ item.port }}:80"
+          - "{{ item.port }}:22"
         restart_policy: always
-      loop: "{{ nginx_sites }}"
+        loop: "{{ nginx_sites }}"  
 
     #créer bdd + créer une table conteneurs + la remplir
     #installation dans le vagrantfile?
@@ -89,3 +95,4 @@
           container_id INT,
           FOREIGN KEY(container_id) REFERENCES containers(container_id)   
           );
+
