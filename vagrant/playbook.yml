@@ -19,7 +19,7 @@
 
     - name: Build Docker image from Dockerfile
       community.docker.docker_image:
-        path: .
+        path: /home/vagrant
         name: ubuntu-ssh
     
     - name: démarrer plusieurs conteneurs 
@@ -95,5 +95,6 @@
           container_id INT,
           FOREIGN KEY(container_id) REFERENCES containers(container_id)   
           );
+
 
 
