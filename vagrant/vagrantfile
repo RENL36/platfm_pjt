@@ -37,7 +37,7 @@ config.vm.provision "file", source: "playbook.yml", destination: "/home/vagrant/
 
 
 #execution de playbook.yml
-  config.vm.provision "shell", inline:  "ansible-playbook -i localhost, #/home/vagrant/ansible/playbook.yml"
+  config.vm.provision "shell", inline:  "ansible-playbook -i localhost, /home/vagrant/ansible/playbook.yml"
 
 end
 
