@@ -28,13 +28,22 @@ config.vm.provision "shell", inline: <<-SHELL
  SHELL
  config.vm.provision "file", source: "webapp/index.php", destination: "/var/www/html/index.php"
 
-
+#importation de playbook.yml dans la vm
 config.vm.provision "shell", inline: "test -d /home/vagrant/ansible || mkdir /home/vagrant/ansible"
 config.vm.provision "shell", inline: <<-SHELL
   sudo chown -R vagrant:vagrant /home/vagrant/ansible
  SHELL
 config.vm.provision "file", source: "playbook.yml", destination: "/home/vagrant/ansible/playbook.yml"
 
+#importation du Dockerfile dans la vm + construction de l'image des futurs conteneurs
+config.vm.provision "shell", inline: "test -d /home/vagrant/docker || mkdir /home/vagrant/docker"
+config.vm.provision "shell", inline: <<-SHELL
+  sudo chown -R vagrant:vagrant /home/vagrant/docker
+ SHELL
+config.vm.provision "file", source: "Dockerfile", destination: "/home/vagrant/docker/Dockerfile"
+config.vm.provision "shell", inline: <<-SHELL
+   docker build -t ubuntu-ssh /home/vagrant/docker
+SHELL
 
 #execution de playbook.yml
   config.vm.provision "shell", inline:  "ansible-playbook -i localhost, /home/vagrant/ansible/playbook.yml"
