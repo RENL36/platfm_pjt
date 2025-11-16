@@ -16,11 +16,6 @@
     
 
   tasks:
-
-    - name: Build Docker image from Dockerfile
-      community.docker.docker_image:
-        path: /vagrant
-        name: ubuntu-ssh
     
     - name: démarrer plusieurs conteneurs 
       community.docker.docker_container:
@@ -30,7 +25,7 @@
         ports:
           - "{{ item.port }}:22"
         restart_policy: always
-        loop: "{{ ubuntu_containers }}"  
+      loop: "{{ ubuntu_containers }}"  
 
     #créer bdd + créer une table conteneurs + la remplir
     #installation dans le vagrantfile?
@@ -95,6 +90,7 @@
           container_id INT,
           FOREIGN KEY(container_id) REFERENCES containers(container_id)   
           );
+
 
 
 
