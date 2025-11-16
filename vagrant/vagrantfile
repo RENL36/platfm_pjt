@@ -1,7 +1,7 @@
 
 $script1 = <<-SCRIPT
 apt-get update -y
-apt-get install -y ansible-core apache2 php libapache2-mod-php mysql-server python3-pip php-mysql
+apt-get install -y ansible-core apache2 php libapache2-mod-php mysql-server python3-pip
 ansible-galaxy collection install community.mysql
 sudo systemctl enable mysql
 apt-get install python3-pip -y
