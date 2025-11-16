@@ -19,7 +19,7 @@ config.vm.network "forwarded_port", guest: 80, host: 8080
 #installer Docker 
  config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
 
-#installer ansible-core apache2 php libapache2-mod-php mysql-server python3-pip 
+#installer ansible-core apache2 php libapache2-mod-php php-mysql mysql-server python3-pip 
  config.vm.provision "shell", inline: $script1
 
 #importation de index.php dans la vm
