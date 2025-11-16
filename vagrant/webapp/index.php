@@ -1,18 +1,17 @@
 <?php
 // ------------------
-// Connexion BDD avec PDO
+// Connexion BDD
 // ------------------
-$host = "localhost";
-$dbname = "base";
-$user = "root";
-$pass = "azerty";
+$db_server = "localhost";
+$db_user = "root";
+$db_pass = "azerty";
+$db_name = "base";
+$conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erreur DB : " . $e->getMessage());
+if (!$conn) {
+    die("Erreur DB : " . mysqli_connect_error());
 }
+
 
 // ------------------
 // PAGE FORMULAIRE : accueil
@@ -50,109 +49,108 @@ if (!isset($_POST['action'])) {
 exit;
 }
 
+
+
 // ========================================================================
 // 1) TRAITEMENT : INSCRIPTION
 // ========================================================================
 if ($_POST['action'] == "inscription") {
 
-    $name = $_POST['user_name'];
-    $firstname = $_POST['user_firstname'];
+    $name = mysqli_real_escape_string($conn, $_POST['user_name']);
+    $firstname = mysqli_real_escape_string($conn, $_POST['user_firstname']);
 
-    // Ajouter utilisateur avec requête préparée
-    $stmt = $pdo->prepare("INSERT INTO users (user_name, user_firstname) VALUES (:name, :firstname)");
-    $stmt->execute([
-        ':name' => $name,
-        ':firstname' => $firstname
-    ]);
+    // Ajouter utilisateur
+    $sql = "INSERT INTO users (user_name, user_firstname) VALUES ('$name', '$firstname')";
+    mysqli_query($conn, $sql);
 
-    $user_id = $pdo->lastInsertId();
+    $user_id = mysqli_insert_id($conn);
 
     // Redirection vers tableau utilisateur
-    afficher_page_utilisateur($pdo, $user_id);
+    afficher_page_utilisateur($conn, $user_id);
     exit;
 }
+
+
 
 // ========================================================================
 // 2) TRAITEMENT : CONNEXION
 // ========================================================================
 if ($_POST['action'] == "connexion") {
 
-    $name = $_POST['user_name'];
-    $firstname = $_POST['user_firstname'];
+    $name = mysqli_real_escape_string($conn, $_POST['user_name']);
+    $firstname = mysqli_real_escape_string($conn, $_POST['user_firstname']);
 
-    $stmt = $pdo->prepare("SELECT user_id FROM users WHERE user_name = :name AND user_firstname = :firstname LIMIT 1");
-    $stmt->execute([
-        ':name' => $name,
-        ':firstname' => $firstname
-    ]);
+    $sql = "SELECT user_id FROM users 
+            WHERE user_name='$name' AND user_firstname='$firstname' LIMIT 1";
+    $res = mysqli_query($conn, $sql);
 
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$user) {
+    if (mysqli_num_rows($res) == 0) {
         echo "<h2>Utilisateur introuvable</h2>";
         echo "<a href='index.php'>Retour</a>";
         exit;
     }
 
-    $user_id = $user['user_id'];
-    afficher_page_utilisateur($pdo, $user_id);
+    $row = mysqli_fetch_assoc($res);
+    $user_id = $row['user_id'];
+
+    afficher_page_utilisateur($conn, $user_id);
     exit;
 }
+
+
 
 // ========================================================================
 // FONCTION : Affichage de la page personnalisée utilisateur
 // ========================================================================
-function afficher_page_utilisateur($pdo, $user_id)
+function afficher_page_utilisateur($conn, $user_id)
 {
     // Récup info utilisateur
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = :id");
-    $stmt->execute([':id' => $user_id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $sql = "SELECT * FROM users WHERE user_id=$user_id";
+    $user = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 
     // Récup liste conteneurs associés
-    $stmt = $pdo->prepare("
-        SELECT * FROM containers 
-        WHERE container_id IN (
-            SELECT container_id FROM users WHERE user_id = :id
-        )
-    ");
-    $stmt->execute([':id' => $user_id]);
-    $containers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sql = "SELECT * FROM containers WHERE container_id IN 
+           (SELECT container_id FROM users WHERE user_id=$user_id)";
+    $containers = mysqli_query($conn, $sql);
 
-    $nb_containers = count($containers);
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Espace utilisateur</title>
-</head>
-<body>
+    $nb_containers = mysqli_num_rows($containers);
 
-    <h1>Bonjour <?= htmlspecialchars($user['user_firstname'] . " " . $user['user_name']) ?></h1>
+    ?>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Espace utilisateur</title>
+    </head>
+    <body>
 
-    <h2>Vos conteneurs : <?= $nb_containers ?></h2>
+        <h1>Bonjour <?= $user['user_firstname'] . " " . $user['user_name'] ?></h1>
 
-    <?php if ($nb_containers > 0) { ?>
-        <ul>
-            <?php foreach ($containers as $c) { ?>
-                <li><?= htmlspecialchars($c['container_name']) ?> — port <?= htmlspecialchars($c['container_port']) ?></li>
-            <?php } ?>
-        </ul>
-    <?php } else { ?>
-        <p>Aucun conteneur pour le moment.</p>
-    <?php } ?>
+        <h2>Vos conteneurs : <?= $nb_containers ?></h2>
 
-    <form action="request_container.php" method="post">
-        <input type="hidden" name="user_id" value="<?= $user_id ?>">
-        <button type="submit">Demander un conteneur</button>
-    </form>
+        <?php if ($nb_containers > 0) { ?>
+            <ul>
+                <?php while ($c = mysqli_fetch_assoc($containers)) { ?>
+                    <li>
+                        <?= $c['container_name'] ?> — port <?= $c['container_port'] ?>
+                    </li>
+                <?php } ?>
+            </ul>
+        <?php } else { ?>
+            <p>Aucun conteneur pour le moment.</p>
+        <?php } ?>
 
-    <br>
-    <a href="index.php">Déconnexion</a>
+        <form action="request_container.php" method="post">
+            <input type="hidden" name="user_id" value="<?= $user_id ?>">
+            <button type="submit">Demander un conteneur</button>
+        </form>
 
-</body>
-</html>
-<?php
+        <br>
+        <a href="index.php">Déconnexion</a>
+
+    </body>
+    </html>
+
+    <?php
 }
-?>
+?> 
