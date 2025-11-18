@@ -1,0 +1,21 @@
+
+
+---
+- name: - name: lire le fichier json
+      ansible.builtin.slurp:
+        src: /var/www/html/users_containers.json
+      register: json_file
+
+      - name: afficher le contenu du fichier json
+      debug:
+        msg: "{{ json_file.content | b64decode }}"
+
+      - name: extraire les ids des conteneurs, nom et prénom de l'utilisateur
+      set_fact:
+        container_id: "{{ json_file.content | b64decode | from_json | map(attribute='container_id') | list }}"
+        user_name: "{{ json_file.content | b64decode | from_json | map(attribute='user_name') | list }}"
+        user_firstname: "{{ json_file.content | b64decode | from_json | map(attribute='user_firstname') | list }}"
+
+
+
+        

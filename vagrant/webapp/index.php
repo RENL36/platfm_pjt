@@ -6,6 +6,7 @@ $db_server = "localhost";
 $db_user = "root";
 $db_pass = "azerty";
 $db_name = "base";
+session_start();
 $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
 
 if (!$conn) {
@@ -92,7 +93,9 @@ if ($_POST['action'] == "connexion") {
 
     $row = mysqli_fetch_assoc($res);
     $user_id = $row['user_id'];
-
+    $_SESSION['user_id'] = $user_id;
+    $_SESSION['user_firstname'] = $_POST['user_firstname'];
+    $_SESSION['user_name'] = $_POST['user_name'];
     afficher_page_utilisateur($conn, $user_id);
     exit;
 }
