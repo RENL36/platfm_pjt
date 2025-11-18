@@ -64,8 +64,7 @@
           CREATE TABLE IF NOT EXISTS containers (
               container_id INT AUTO_INCREMENT PRIMARY KEY,
               container_name VARCHAR(100) NOT NULL,
-              container_port  VARCHAR(100) NOT NULL
-          );
+              container_port VARCHAR(100) NOT NULL UNIQUE    );
 
     - name: insertion des conteneurs dans la table
       community.mysql.mysql_query:
@@ -73,9 +72,10 @@
         login_password: "{{ mysql_root_password }}"
         login_db: "{{ mysql_db_name }}"
         query: |
-            INSERT INTO containers(container_name, container_port) VALUES
+            INSERT IGNORE INTO containers(container_name, container_port) VALUES
             ('{{ item.name }}','{{ item.port }}')
       loop: "{{ ubuntu_containers }}"
+      when: first_run is defined
 
     - name: créer la table users
       community.mysql.mysql_query:

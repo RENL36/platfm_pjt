@@ -15,6 +15,10 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = "0.1.0"
   
 config.vm.network "forwarded_port", guest: 80, host: 8080
+config.vm.network "forwarded_port", guest: 2221, host: 2221
+config.vm.network "forwarded_port", guest: 2222, host: 2222
+config.vm.network "forwarded_port", guest: 2223, host: 2223
+config.vm.network "public_network", ip: "192.168.1.200"
 
 #installer Docker 
  config.vm.provision "shell", name: "install-docker", path: "install-docker.sh"
@@ -46,7 +50,7 @@ config.vm.provision "shell", inline: <<-SHELL
 SHELL
 
 #execution de playbook.yml
-  config.vm.provision "shell", inline:  "ansible-playbook -i localhost, /home/vagrant/ansible/playbook.yml"
+  config.vm.provision "shell", inline:  "ansible-playbook -i localhost, /home/vagrant/ansible/playbook.yml --extra-vars 'first_run=true'"
 
 end
 
