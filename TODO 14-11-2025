@@ -24,6 +24,8 @@ A demander : plusieurs utilisateurs pourraient avoir accès à un même conteneu
 
 Le code dans la branche webapp lance un conteneur à chaque demande de client, ce qui n'est pas demandé. Les conteneurs sont déjà lancés de base, on ignore cette branche.
 
+3) script pour création compte user (lancer / .php avec shell_exec())
+
 4) crontab qui exécute périodiquement playbook2 pour :
 - check bdd pour voir pour chaque contract actif si conteneurs tjs en vie
 - check contrats -> si contrat prend fin, supp compte utilisateur + kill processus (ssh...)
