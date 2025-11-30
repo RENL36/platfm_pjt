@@ -23,3 +23,15 @@ A demander : plusieurs utilisateurs pourraient avoir accès à un même conteneu
 3) Idéalement ajouter du style au serveur web
 
 Le code dans la branche webapp lance un conteneur à chaque demande de client, ce qui n'est pas demandé. Les conteneurs sont déjà lancés de base, on ignore cette branche.
+
+3) script pour création compte user (lancer / .php avec shell_exec())
+
+4) crontab qui exécute périodiquement playbook2 pour :
+- check bdd pour voir pour chaque contract actif si conteneurs tjs en vie
+- check contrats -> si contrat prend fin, supp compte utilisateur + kill processus (ssh...)
+
+5) rajouter table contrats à la bdd
+
+(6) utiliser docker compose pour que les conteneurs puissent communiquer entre eux)
+
+7) modif fichiers .php +
