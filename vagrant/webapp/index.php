@@ -65,6 +65,9 @@ if ($_POST['action'] == "inscription") {
     mysqli_query($conn, $sql);
 
     $user_id = mysqli_insert_id($conn);
+    $_SESSION['user_id'] = $user_id;
+    $_SESSION['user_firstname'] = $_POST['user_firstname'];
+    $_SESSION['user_name'] = $_POST['user_name'];
 
     // Redirection vers tableau utilisateur
     afficher_page_utilisateur($conn, $user_id);
@@ -112,8 +115,8 @@ function afficher_page_utilisateur($conn, $user_id)
     $user = mysqli_fetch_assoc(mysqli_query($conn, $sql));
 
     // Récup liste conteneurs associés
-    $sql = "SELECT * FROM containers WHERE container_id IN 
-           (SELECT container_id FROM users WHERE user_id=$user_id)";
+    $sql = "SELECT * FROM containers WHERE contrat_id IN 
+           (SELECT contrat_id FROM contrats WHERE user_id=$user_id)";
     $containers = mysqli_query($conn, $sql);
 
     $nb_containers = mysqli_num_rows($containers);
@@ -145,7 +148,8 @@ function afficher_page_utilisateur($conn, $user_id)
 
         <form action="request_container.php" method="post">
             <input type="hidden" name="user_id" value="<?= $user_id ?>">
-            <button type="submit">Demander un conteneur</button>
+            Nombre de conteneurs souhaités : <input type="text" name="num_containers" required><br>
+            <button type="submit">Demander des conteneurs</button>
         </form>
 
         <br>

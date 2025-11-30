@@ -42,6 +42,8 @@ config.vm.provision "file", source: "playbook.yml", destination: "/home/vagrant/
 
 #importation du Dockerfile dans la vm + construction de l'image des futurs conteneurs
 config.vm.provision "shell", inline: "test -d /home/vagrant/docker || mkdir /home/vagrant/docker"
+
+
 config.vm.provision "shell", inline: <<-SHELL
   sudo chown -R vagrant:vagrant /home/vagrant/docker
  SHELL
@@ -50,6 +52,9 @@ config.vm.provision "shell", inline: <<-SHELL
    docker build -t ubuntu-ssh /home/vagrant/docker
 SHELL
 config.vm.provision "shell", inline: "sudo chown -R www-data:www-data /var/www/html"
+
+config.vm.provision :shell, path: "cron.sh"
+
 #execution de playbook.yml
 
 
