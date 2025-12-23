@@ -35,3 +35,13 @@ Le code dans la branche webapp lance un conteneur à chaque demande de client, c
 (6) utiliser docker compose pour que les conteneurs puissent communiquer entre eux)
 
 7) modif fichiers .php +
+
+
+
+Fonctionnalités supplémentaires :
+Gérer perte de conteneurs
+Implémenter client qui fait des attaques ddos sur un site et voir sur le site qu'il y a bien des attaques (ex avec curl)
+Implémenter la possibilité de laisser choisir au client ce qu'il veut comme éléments d'installés dans son conteneur (il demande ce qu'il veut sur le site) puis cela installera automatiquement dans le conteneur ce qu'il veut.
+
+
+
