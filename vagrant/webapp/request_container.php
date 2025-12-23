@@ -56,23 +56,27 @@ if (mysqli_query($conn, $sql)) {
 //ATTENTION : $container_res peut être une liste
 $containers_sql = "SELECT container_name FROM containers WHERE container_port IN ($ports)";
 $user_sql = "SELECT user_name FROM users WHERE user_id = $user_id";
-  
+
 $containers_res = mysqli_query($conn, $containers_sql);
 $user_res = mysqli_query($conn, $user_sql);
-  
+
 $user_row = mysqli_fetch_assoc($user_res);
 $user_name = $user_row['user_name'];
 //inconvénient : si utilisateur perd son mdp
 $user_password = bin2hex(random_bytes(4));
-  
+
+$user_esc = escapeshellarg($user_name);
+$pass_esc = escapeshellarg($user_password);
+
 while ($row = mysqli_fetch_assoc($containers_res)) {
     $container = $row['container_name'];
-    $command = "docker exec -u root $container bash -c \"useradd -m -s /bin/bash $user_name && echo '$user_name:$user_password' | chpasswd\"";
-    exec($command, $output, $return_var):
+    //$container_esc = escapeshellarg($container);
+    $command = "docker exec -u root $container bash -c \"id $user_esc >/dev/null 2>&1 || (useradd -m -s /bin/bash $user_esc && echo '$user_esc:$pa>
+    exec($command, $output, $return_var);
 
   if ($return_var === 0) {
-    echo "Accès aux ressources >> connexion SSH";
-    echo "identifiant :  $user_name";
+    echo "Accès aux ressources >> connexion SSH<br>";
+    echo "identifiant :  $user_name<br>";
     echo "password : $user_password";
   } else {
 }}
