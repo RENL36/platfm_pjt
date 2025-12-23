@@ -52,3 +52,6 @@ if (mysqli_query($conn, $sql)) {
 } else {
   echo "Erreur lors de l'attribution des conteneurs : " . mysqli_error($conn);
 }
+
+$output = shell_exec('RET=`docker run `;echo $RET');
+echo $output;
