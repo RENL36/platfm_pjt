@@ -71,8 +71,7 @@ $pass_esc = escapeshellarg($user_password);
 while ($row = mysqli_fetch_assoc($containers_res)) {
     $container = $row['container_name'];
     //$container_esc = escapeshellarg($container);
-    $command = "docker exec -u root $container bash -c \"id $user_esc >/dev/null 2>&1 || (useradd -m -s /bin/bash $user_esc && echo '$user_esc:$pa>
-    exec($command, $output, $return_var);
+    $command = "docker exec -u root $container bash -c \"id $user_esc >/dev/null 2>&1 || (useradd -m -s /bin/bash $user_esc && echo '$user_esc:$pass_esc' | chpasswd)\"";    exec($command, $output, $return_var);
 
   if ($return_var === 0) {
     echo "Accès aux ressources >> connexion SSH<br>";
