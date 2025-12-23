@@ -48,10 +48,43 @@ $last_id = mysqli_insert_id($conn);
 $ports = implode(",", array_map('intval', $ports_to_assign));
 $sql = "UPDATE containers SET contrat_id = $last_id WHERE container_port IN ($ports)";
 if (mysqli_query($conn, $sql)) {
-  echo "Conteneurs attribués. Les ports sont : " . implode(", ", $ports_to_assign);
+  echo "Conteneurs attribués. Les ports sont : " . implode(", ", $ports_to_assign) . "<br>";
 } else {
+<<<<<<< HEAD
   echo "Erreur lors de l'attribution des conteneurs : " . mysqli_error($conn);
 }
 
 $output = shell_exec('RET=`docker run `;echo $RET');
 echo $output;
+=======
+  echo "Erreur lors de l'attribution des conteneurs : " . mysqli_error($conn);}
+  
+//create count in container for actual user
+//ATTENTION : $container_res peut être une liste
+$containers_sql = "SELECT container_name FROM containers WHERE container_port IN ($ports)";
+$user_sql = "SELECT user_name FROM users WHERE user_id = $user_id";
+
+$containers_res = mysqli_query($conn, $containers_sql);
+$user_res = mysqli_query($conn, $user_sql);
+
+$user_row = mysqli_fetch_assoc($user_res);
+$user_name = $user_row['user_name'];
+//inconvénient : si utilisateur perd son mdp
+$user_password = bin2hex(random_bytes(4));
+
+$user_esc = escapeshellarg($user_name);
+$pass_esc = escapeshellarg($user_password);
+
+while ($row = mysqli_fetch_assoc($containers_res)) {
+    $container = $row['container_name'];
+    //$container_esc = escapeshellarg($container);
+    $command = "docker exec -u root $container bash -c \"id $user_esc >/dev/null 2>&1 || (useradd -m -s /bin/bash $user_esc && echo '$user_esc:$pass_esc' | chpasswd)\"";    exec($command, $output, $return_var);
+
+  if ($return_var === 0) {
+    echo "Accès aux ressources >> connexion SSH<br>";
+    echo "identifiant :  $user_name<br>";
+    echo "password : $user_password";
+  } else {
+}}
+?>
+>>>>>>> 0f6e34e6f6fcd659fc0b61a18a55885d46dd3bf1
