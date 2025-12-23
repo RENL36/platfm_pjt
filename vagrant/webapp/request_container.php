@@ -65,16 +65,15 @@ $user_name = $user_row['user_name'];
 //inconvénient : si utilisateur perd son mdp
 $user_password = bin2hex(random_bytes(4));
   
-for ($row = mysqli_fetch_assoc($containers_res)) {
-    $container = $row['container_res'];
+while ($row = mysqli_fetch_assoc($containers_res)) {
+    $container = $row['container_name'];
     $command = "docker exec -u root $container bash -c \"useradd -m -s /bin/bash $user_name && echo '$user_name:$user_password' | chpasswd\"";
-    shell_exec($command, $return_var):
+    exec($command, $output, $return_var):
 
   if ($return_var === 0) {
     echo "Accès aux ressources >> connexion SSH";
     echo "identifiant :  $user_name";
     echo "password : $user_password";
   } else {
-    echo "Erreur : " . implode("\n", $output);
 }}
 ?>
