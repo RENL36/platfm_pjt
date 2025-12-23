@@ -48,7 +48,7 @@ $last_id = mysqli_insert_id($conn);
 $ports = implode(",", array_map('intval', $ports_to_assign));
 $sql = "UPDATE containers SET contrat_id = $last_id WHERE container_port IN ($ports)";
 if (mysqli_query($conn, $sql)) {
-  echo "Conteneurs attribués. Les ports sont : " . implode(", ", $ports_to_assign);
+  echo "Conteneurs attribués. Les ports sont : " . implode(", ", $ports_to_assign) . "<br>";
 } else {
   echo "Erreur lors de l'attribution des conteneurs : " . mysqli_error($conn);}
   
