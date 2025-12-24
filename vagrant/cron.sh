@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 cron_maj_abonnement="* * * * * ansible-playbook -i localhost, /home/vagrant/ansible/playbook2.yml"
 cron_maj_conteneur="* * * * * /home/vagrant/maj_conteneur.sh"
 
