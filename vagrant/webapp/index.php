@@ -113,7 +113,7 @@ if ($_POST['action'] == "inscription") {
     $name = mysqli_real_escape_string($conn, $_POST['user_name']);
     $firstname = mysqli_real_escape_string($conn, $_POST['user_firstname']);
 
-    $sql = "INSERT INTO users (user_name, user_firstname) VALUES ('$name', '$firstname')";
+    $sql = "INSERT INTO users (user_name, user_firstname, user_password) VALUES ('$name', '$firstname', NULL)";
     mysqli_query($conn, $sql);
 
     $user_id = mysqli_insert_id($conn);
