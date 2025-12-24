@@ -24,31 +24,38 @@ if docker rm -f "$CONTAINER_NAME"; then
     DB_PASS="azerty"
     DB_NAME="base"
 
-    # Récupérer le contrat_id avant suppression
-    SQL1="SELECT * FROM containers WHERE container_name='${CONTAINER_NAME}';"
-    TUPLE=$(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL1")
-    CONTRAT_ID=TUPLE[3]
-    PORT=TUPLE[2]
+    # Récupérer les infos du conteneur avant suppression dans BDD
+    SQL1="SELECT container_id, container_name, container_port, contrat_id FROM containers WHERE container_name='${CONTAINER_NAME}';"
+    read CONTAINER_ID CONTAINER_NAME_DB PORT CONTRAT_ID <<< $(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL1")
 
-
-    if CONTRAT_ID == null; then
-      echo "Le conteneur supprimé n'appartient à personne"
-    else 
-      echo "contrat_id associé : $CONTRAT_ID"
-      echo "Réattribution d'un conteneur"
-      #Création d'1 nv conteneur avec même port
-      docker run -d --name CONTAINER_NAME -p PORT:22 image
-      echo "Nouveau conteneur attribué" + 
-      docker exec -u root $container bash -c \"id $user_esc >/dev/null 2>&1 || (useradd -m -s /bin/bash $user_esc && echo '$user_esc:$pass_esc' | chpasswd)
-   
     # Supprimer la ligne du conteneur
-    SQL5="DELETE FROM containers WHERE container_name='${CONTAINER_NAME}';"
-    mysql -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL5"
+    SQL2="DELETE FROM containers WHERE container_name='${CONTAINER_NAME}';"
+    mysql -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL2"
 
-    if [ $? -eq 0 ]; then
-        echo "Ligne du conteneur supprimée dans la table 'containers'."
+    if [ -z "$CONTRAT_ID" ] || [ "$CONTRAT_ID" = "NULL" ]; then
+        echo "Le conteneur supprimé n'appartient à personne"
     else
-        echo "Erreur lors de la suppression dans la table 'containers'."
+        # Récupérer l'utilisateur associé
+        SQL3="SELECT user_id FROM contrats WHERE contrat_id=${CONTRAT_ID};"
+        USER_ID=$(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL3")
+        SQL4="SELECT user_name FROM users WHERE user_id=${USER_ID};"
+        USER_NAME=$(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL4")
+
+        echo "Utilisateur associé : $USER_NAME"
+
+        # Création d'un nouveau conteneur avec le même port
+        echo "Réattribution d'un conteneur..."
+        docker run -d --name "$CONTAINER_NAME" -p "$PORT":22 ubuntu-ssh
+        echo "Nouveau conteneur attribué"
+
+        # Actualisation de la BDD
+        SQL5="INSERT INTO containers(container_name, container_port, contrat_id) VALUES ('$CONTAINER_NAME', $PORT, $CONTRAT_ID);"
+        mysql -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL5"
+
+        # Création de l'utilisateur dans le conteneur si nécessaire
+        USER_PASS=$(openssl rand -hex 4)
+        docker exec -u root "$CONTAINER_NAME" bash -c "id $USER_NAME >/dev/null 2>&1 || (useradd -m -s /bin/bash $USER_NAME && echo '$USER_NAME:$USER_PASS' | chpasswd)"
+        echo "Identifiants : $USER_NAME / $USER_PASS"
     fi
 
 else
