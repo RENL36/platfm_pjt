@@ -36,13 +36,8 @@ if docker rm -f "$CONTAINER_NAME"; then
     else 
       echo "contrat_id associé : $CONTRAT_ID"
       echo "Réattribution d'un conteneur"
-      # Identifier les conteneurs non attribués
-      SQL2="SELECT * from containers where contrat_id = NULL;"
-      TABLE_CONTAINERS=$(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL2")
-      NEW_CONTAINER=TABLE_CONTAINERS[0]
-      SQL3="UPDATE containers set container_id=NEW_CONTAINER[0], container_name=NEW_CONTAINER[1], container_port=PORT, container_contrat=CONTRAT_ID where "
-      mysql -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL3"
-      SQL4=""
+      #Création d'1 nv conteneur avec même port
+      docker run -d --name CONTAINER_NAME -p PORT:22 image
       echo "Nouveau conteneur attribué" + 
       docker exec -u root $container bash -c \"id $user_esc >/dev/null 2>&1 || (useradd -m -s /bin/bash $user_esc && echo '$user_esc:$pass_esc' | chpasswd)
    
