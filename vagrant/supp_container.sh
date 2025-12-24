@@ -38,8 +38,8 @@ if docker rm -f "$CONTAINER_NAME"; then
         # Récupérer l'utilisateur associé
         SQL3="SELECT user_id FROM contrats WHERE contrat_id=${CONTRAT_ID};"
         USER_ID=$(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL3")
-        SQL4="SELECT user_name FROM users WHERE user_id=${USER_ID};"
-        USER_NAME=$(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL4")
+        SQL4="SELECT user_name, user_password FROM users WHERE user_id=${USER_ID};"
+        read USER_NAME USER_PASS <<< $(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL4")
 
         echo "Utilisateur associé : $USER_NAME"
 
@@ -53,7 +53,6 @@ if docker rm -f "$CONTAINER_NAME"; then
         mysql -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL5"
 
         # Création de l'utilisateur dans le conteneur si nécessaire
-        USER_PASS=$(openssl rand -hex 4)
         docker exec -u root "$CONTAINER_NAME" bash -c "id $USER_NAME >/dev/null 2>&1 || (useradd -m -s /bin/bash $USER_NAME && echo '$USER_NAME:$USER_PASS' | chpasswd)"
         echo "Identifiants : $USER_NAME / $USER_PASS"
     fi
