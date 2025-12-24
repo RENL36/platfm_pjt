@@ -83,6 +83,10 @@ $user_row = mysqli_fetch_assoc($user_res);
 $user_name = $user_row['user_name'];
 $user_password = bin2hex(random_bytes(4));
 
+#conservation du password du client dans la table
+$password_sql = "UPDATE users SET user_password = $user_password WHERE user_name = $user_name"; 
+mysqli_query($conn, $password_sql);
+
 $user_esc = escapeshellarg($user_name);
 $pass_esc = escapeshellarg($user_password);
 
