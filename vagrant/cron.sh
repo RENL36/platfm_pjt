@@ -1,30 +1,28 @@
 #!/bin/bash
 
-cron="* * * * * ansible-playbook -i localhost, /home/vagrant/ansible/playbook2.yml"
-    # │ │ │ │ │
-    # │ │ │ │ │
-    # │ │ │ │ └───── day of week (0 - 6) (0 to 6 are Sunday to Saturday, or use names; 7 is Sunday, the same as 0)
-    # │ │ │ └────────── month (1 - 12)
-    # │ │ └─────────────── day of month (1 - 31)
-    # │ └──────────────────── hour (0 - 23)
-    # └───────────────────────── min (0 - 59)
+#!/bin/bash
 
-# Escape all the asterisks so we can grep for it
-cron_escaped=$(echo "$cron" | sed s/\*/\\\\*/g)
+cron_maj_abonnement="* * * * * ansible-playbook -i localhost, /home/vagrant/ansible/playbook2.yml"
+cron_maj_conteneur="* * * * * /home/vagrant/maj_conteneur.sh"
 
-# Check if cron job already in crontab
-crontab -l | grep "${cron_escaped}"
-if [[ $? -eq 0 ]] ;
-  then
-    echo "Crontab already exists. Exiting..."
-    exit
+# Mettre les deux tâches dans une liste
+crons=(
+  "$cron_maj_abonnement"
+  "$cron_maj_conteneur"
+)
+
+for cron in "${crons[@]}"; do
+  # Échapper les * pour grep
+  cron_escaped=$(echo "$cron" | sed 's/\*/\\*/g')
+
+  # Vérifier si la tâche existe déjà
+  if crontab -l 2>/dev/null | grep -q "$cron_escaped"; then
+    echo "Crontab déjà existant : $cron"
   else
-    # Write out current crontab into temp file
-    crontab -l > mycron
-    # Append new cron into cron file
+    echo "Ajout du cron : $cron"
+    crontab -l 2>/dev/null > mycron
     echo "$cron" >> mycron
-    # Install new cron file
     crontab mycron
-    # Remove temp file
     rm mycron
-fi
+  fi
+done
