@@ -59,7 +59,7 @@ for DB_CONTAINER in $DB_CONTAINERS; do
         echo "Utilisateur associé : $USER_NAME"
 
         # Création du nouveau conteneur
-        NEW_CONTAINER_NAME="${DB_CONTAINER}_bis"
+        NEW_CONTAINER_NAME="${DB_CONTAINER}"
         docker run -d --name "$NEW_CONTAINER_NAME" -p "$PORT":22 ubuntu-ssh
         echo "Nouveau conteneur créé : $NEW_CONTAINER_NAME"
 
