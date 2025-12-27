@@ -1,4 +1,3 @@
-
 $script1 = <<-SCRIPT
 apt-get update -y
 apt-get install -y ansible-core apache2 php libapache2-mod-php mysql-server python3-pip php-mysqli
@@ -41,6 +40,10 @@ config.vm.provision "shell", inline: <<-SHELL
 config.vm.provision "file", source: "playbook.yml", destination: "/home/vagrant/ansible/playbook.yml"
 config.vm.provision "file", source: "playbook2.yml", destination: "/home/vagrant/ansible/playbook2.yml"
 config.vm.provision "file", source: "maj_conteneur.sh", destination: "/home/vagrant/maj_conteneur.sh"
+config.vm.provision :shell, inline: <<-SHELL
+  sudo chown vagrant:vagrant /home/vagrant/maj_conteneur.sh
+  sudo chmod +x /home/vagrant/maj_conteneur.sh
+ SHELL
 
 
 #importation du Dockerfile dans la vm + construction de l'image des futurs conteneurs
@@ -62,6 +65,10 @@ config.vm.provision "shell", inline: "sudo chown -R www-data:www-data /var/www/h
   config.vm.provision "shell", inline:  "ansible-playbook -i localhost, /home/vagrant/ansible/playbook.yml --extra-vars 'first_run=true'"
 
 end
+
+
+
+
 
 
 
