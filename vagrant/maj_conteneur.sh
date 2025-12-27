@@ -33,8 +33,7 @@ for DB_CONTAINER in $DB_CONTAINERS; do
     # Si le conteneur n'existe plus
     if [[ "$FOUND" == false ]]; then
         echo "$DB_CONTAINER n'existe plus"
-        echo "Réattribution d'un conteneur au client..."
-
+        
         # Infos BDD
         SQL1="SELECT container_port, contrat_id FROM containers WHERE container_name='${DB_CONTAINER}';"
         read PORT CONTRAT_ID <<< $(
@@ -47,6 +46,7 @@ for DB_CONTAINER in $DB_CONTAINERS; do
             continue
         fi
 
+        echo "Réattribution d'un conteneur au client..."
         # Récupérer l'utilisateur
         SQL3="SELECT user_id FROM contrats WHERE contrat_id=${CONTRAT_ID};"
         USER_ID=$(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL3")
