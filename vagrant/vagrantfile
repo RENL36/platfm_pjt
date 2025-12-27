@@ -53,10 +53,7 @@ config.vm.provision "shell", inline: <<-SHELL
 SHELL
 config.vm.provision "shell", inline: "sudo chown -R www-data:www-data /var/www/html"
 
-config.vm.provision :shell, path: "cron.sh"
-
 #execution de playbook.yml
-
 
   config.vm.provision "shell", inline:  "ansible-playbook -i localhost, /home/vagrant/ansible/playbook.yml --extra-vars 'first_run=true'"
 
