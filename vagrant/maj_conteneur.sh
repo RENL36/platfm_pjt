@@ -13,7 +13,7 @@ echo "Vérification des conteneurs en base..."
 NB_CONTAINERS_SUPP=0
 
 # Liste des conteneurs Docker existants
-DOCKER_CONTAINERS=$(docker ps -a --format '{{.Names}}')
+DOCKER_CONTAINERS=$(docker ps --format '{{.Names}}')
 
 # Liste des conteneurs présents en base
 DB_CONTAINERS=$(mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" \
@@ -41,10 +41,6 @@ for DB_CONTAINER in $DB_CONTAINERS; do
             mysql -N -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL1"
         )
 
-        # Supprimer l'ancien conteneur de la BDD
-        SQL2="DELETE FROM containers WHERE container_name='${DB_CONTAINER}';"
-        mysql -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL2"
-
         # Si aucun contrat
         if [[ -z "$CONTRAT_ID" || "$CONTRAT_ID" == "NULL" ]]; then
             echo "Le conteneur supprimé n'appartenait à personne"
@@ -66,11 +62,6 @@ for DB_CONTAINER in $DB_CONTAINERS; do
         NEW_CONTAINER_NAME="${DB_CONTAINER}_bis"
         docker run -d --name "$NEW_CONTAINER_NAME" -p "$PORT":22 ubuntu-ssh
         echo "Nouveau conteneur créé : $NEW_CONTAINER_NAME"
-
-        # Mise à jour BDD
-        SQL5="INSERT INTO containers(container_name, container_port, contrat_id)
-              VALUES ('$NEW_CONTAINER_NAME', $PORT, $CONTRAT_ID);"
-        mysql -u "$DB_USER" -p"$DB_PASS" -D "$DB_NAME" -e "$SQL5"
 
         # Création utilisateur dans le conteneur
         docker exec -u root "$NEW_CONTAINER_NAME" bash -c "
