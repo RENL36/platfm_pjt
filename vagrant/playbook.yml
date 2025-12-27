@@ -130,6 +130,8 @@
           
           CALL ajout_contrat();
           
-
+      - name: lancement du cron 
+        command: /vagrant/cron.sh
+        become: yes
 
 
