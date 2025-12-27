@@ -25,6 +25,12 @@ config.vm.network "public_network", ip: "192.168.1.200"
 #installer ansible-core apache2 php libapache2-mod-php php-mysql mysql-server python3-pip 
  config.vm.provision "shell", inline: $script1
 
+#pour que comm php/docker puisse se faire 
+ config.vm.provision "shell", inline: <<-SHELL
+  sudo usermod -aG docker www-data
+  sudo systemctl restart apache2 
+ SHELL
+
 #importation de index.php dans la vm
 config.vm.provision "shell", inline: <<-SHELL
  sudo chown -R vagrant:vagrant /var/www/html
