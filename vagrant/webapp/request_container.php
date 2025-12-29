@@ -50,13 +50,6 @@ $sql = "UPDATE containers SET contrat_id = $last_id WHERE container_port IN ($po
 if (mysqli_query($conn, $sql)) {
   echo "Conteneurs attribués. Les ports sont : " . implode(", ", $ports_to_assign) . "<br>";
 } else {
-<<<<<<< HEAD
-  echo "Erreur lors de l'attribution des conteneurs : " . mysqli_error($conn);
-}
-
-$output = shell_exec('RET=`docker run `;echo $RET');
-echo $output;
-=======
   echo "Erreur lors de l'attribution des conteneurs : " . mysqli_error($conn);}
   
 //create count in container for actual user
