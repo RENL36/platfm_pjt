@@ -248,6 +248,9 @@ function afficher_page_utilisateur($conn, $user_id)
         <input type="hidden" name="user_id" value="<?= $user_id ?>">
         Nombre de conteneurs souhaités :
         <input type="text" name="num_containers" required>
+
+        Durée de session (minutes) :
+        <input type="text" name="session_duration" required>
         <button type="submit">Demander des conteneurs</button>
     </form>
 

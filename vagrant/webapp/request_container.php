@@ -70,7 +70,7 @@ for ($i = 0; $i < $_POST['num_containers']; $i++) {
 }
 
 $sql = "INSERT INTO contrats (user_id, date_debut, date_expiration)
-        VALUES ($user_id, CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 2 MINUTE))";
+        VALUES ($user_id, CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL " . (int)$_POST['session_duration'] . " MINUTE))";
 if (mysqli_query($conn, $sql)) {
     echo "<p class='success'>Contrat créé avec succès.</p>";
 }
