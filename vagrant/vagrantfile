@@ -1,6 +1,6 @@
 $script1 = <<-SCRIPT
 apt-get update -y
-apt-get install -y ansible-core apache2 php libapache2-mod-php mysql-server python3-pip php-mysqli
+apt-get install -y ansible-core apache2 php libapache2-mod-php mysql-server python3-pip php-mysqli python3-mysqldb
 ansible-galaxy collection install community.mysql
 sudo systemctl enable mysql
 apt-get install python3-pip -y
@@ -34,10 +34,32 @@ config.vm.network "public_network", ip: "192.168.1.200"
 #importation de index.php dans la vm
 config.vm.provision "shell", inline: <<-SHELL
  sudo chown -R vagrant:vagrant /var/www/html
+ sudo rm -f /var/www/html/index.html
  
  SHELL
+
+
+config.vm.provision "shell", inline: <<-SHELL
+  sudo timedatectl set-timezone Europe/Paris
+  sudo timedatectl set-ntp true
+SHELL
+
+
+
  config.vm.provision "file", source: "webapp/index.php", destination: "/var/www/html/index.php"
  config.vm.provision "file", source: "webapp/request_container.php", destination: "/var/www/html/request_container.php"  
+ config.vm.provision "file", source: "iteration_maj_conteneur.sh", destination: "/home/vagrant/iteration_maj_conteneur.sh"
+ config.vm.provision "file", source: "iteration_testing.sh", destination: "/home/vagrant/iteration_testing.sh"
+ config.vm.provision "file", source: "iteration_playbook2.sh", destination: "/home/vagrant/iteration_playbook2.sh"
+config.vm.provision :shell, inline: <<-SHELL
+  sudo chown vagrant:vagrant /home/vagrant/iteration_maj_conteneur.sh
+  sudo chmod +x /home/vagrant/iteration_maj_conteneur.sh
+  sudo chown vagrant:vagrant /home/vagrant/iteration_testing.sh
+  sudo chmod +x /home/vagrant/iteration_testing.sh
+  sudo chown vagrant:vagrant /home/vagrant/iteration_playbook2.sh
+  sudo chmod +x /home/vagrant/iteration_playbook2.sh
+ SHELL
+
 #importation de playbook.yml, playbook2.yml, maj_conteneur.sh dans rep dédié sur la vm
 config.vm.provision "shell", inline: "test -d /home/vagrant/ansible || mkdir /home/vagrant/ansible"
 config.vm.provision "shell", inline: <<-SHELL
@@ -64,11 +86,17 @@ config.vm.provision "shell", inline: <<-SHELL
    docker build -t ubuntu-ssh /home/vagrant/docker
 SHELL
 config.vm.provision "shell", inline: "sudo chown -R www-data:www-data /var/www/html"
+config.vm.provision "shell", path: "cron.sh"
 
 
 #execution de playbook.yml
 
-  config.vm.provision "shell", inline:  "ansible-playbook -i localhost, /home/vagrant/ansible/playbook.yml --extra-vars 'first_run=true'"
+config.vm.provision "shell", inline:  "ansible-playbook -i localhost, /home/vagrant/ansible/playbook.yml --extra-vars 'first_run=true'"
+
+config.vm.provision "shell", inline: <<-SHELL
+  sudo /etc/init.d/mysql restart service
+SHELL
+
 
 end
 

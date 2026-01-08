@@ -5,11 +5,21 @@ $db_server = "localhost";
 $db_user = "root";
 $db_pass = "azerty";
 $db_name = "base";
-
+date_default_timezone_set('Europe/Paris');
 $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
 if (!$conn) {
     die("Erreur DB : " . mysqli_connect_error());
 }
+
+$now = new DateTime();
+$mins = $now->getOffset() / 60;
+$sgn = ($mins < 0 ? -1 : 1);
+$mins = abs($mins);
+$hrs = floor($mins / 60);
+$mins -= $hrs * 60;
+$offset = sprintf('%+d:%02d', $hrs*$sgn, $mins);
+mysqli_query($conn, "SET SESSION time_zone = '$offset'");
+
 
 echo "<style>
 body {
@@ -60,7 +70,7 @@ for ($i = 0; $i < $_POST['num_containers']; $i++) {
 }
 
 $sql = "INSERT INTO contrats (user_id, date_debut, date_expiration)
-        VALUES ($user_id, NOW(), DATE_ADD(NOW(), INTERVAL 5 MINUTE))";
+        VALUES ($user_id, CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 2 MINUTE))";
 if (mysqli_query($conn, $sql)) {
     echo "<p class='success'>Contrat créé avec succès.</p>";
 }
@@ -74,17 +84,18 @@ if (mysqli_query($conn, $sql)) {
 }
 
 $containers_sql = "SELECT container_name FROM containers WHERE container_port IN ($ports)";
-$user_sql = "SELECT user_name FROM users WHERE user_id = $user_id";
+$user_sql = "SELECT user_name, user_firstname FROM users WHERE user_id = $user_id";
 
 $containers_res = mysqli_query($conn, $containers_sql);
 $user_res = mysqli_query($conn, $user_sql);
 
 $user_row = mysqli_fetch_assoc($user_res);
 $user_name = $user_row['user_name'];
+$user_firstname = $user_row['user_firstname'];
 $user_password = bin2hex(random_bytes(4));
 
 #conservation du password du client dans la table
-$password_sql = "UPDATE users SET user_password = '$user_password' WHERE user_name = '$user_name'"; 
+$password_sql = "UPDATE users SET user_password = '$user_password' WHERE user_name = '$user_name' and user_firstname = '$user_firstname'"; 
 mysqli_query($conn, $password_sql);
 
 $user_esc = escapeshellarg($user_name);
@@ -104,5 +115,6 @@ while ($row = mysqli_fetch_assoc($containers_res)) {
 
 echo "<a href='index.php'>Retour à l'accueil</a>";
 echo "</div>";
+
+
 ?>
->>>>>>> 0f6e34e6f6fcd659fc0b61a18a55885d46dd3bf1

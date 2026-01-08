@@ -34,10 +34,6 @@
         name: mysql-server
         state: present
 
-    - name: installer connecteur python
-      apt:
-        name: python3-mysqldb
-        state: present
 
     - name: définir le mot de passe root MySQL 
       mysql_user:
@@ -62,7 +58,7 @@
         login_db: "{{ mysql_db_name }}"
         query: |
           CREATE TABLE IF NOT EXISTS containers (
-              container_id INT PRIMARY KEY,
+              container_id INT PRIMARY KEY AUTO_INCREMENT,
               container_name VARCHAR(100) NOT NULL,
               container_port VARCHAR(100) NOT NULL UNIQUE    );
 
@@ -100,8 +96,8 @@
           CREATE TABLE IF NOT EXISTS contrats (
           contrat_id INT AUTO_INCREMENT PRIMARY KEY,
           user_id INT,
-          date_debut DATE,
-          date_expiration DATE,
+          date_debut DATETIME,
+          date_expiration DATETIME,
           FOREIGN KEY(user_id) REFERENCES users(user_id)   
           );
 
@@ -129,9 +125,5 @@
             END;
           
           CALL ajout_contrat();
-          
-      - name: lancement du cron 
-        command: /vagrant/cron.sh
-        become: yes
 
 

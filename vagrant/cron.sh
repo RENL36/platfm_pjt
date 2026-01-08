@@ -5,13 +5,14 @@
 # =========================
 LOG_DIR="/tmp"
 
-cron_maj_abonnement="* * * * * ansible-playbook -i localhost, /home/vagrant/ansible/playbook2.yml >> $LOG_DIR/maj_abonnement.log 2>&1"
-cron_maj_conteneur="* * * * * /home/vagrant/maj_conteneur.sh >> $LOG_DIR/maj_conteneur.log 2>&1"
-
+cron_maj_abonnement="* * * * * /home/vagrant/iteration_playbook2.sh"
+cron_maj_conteneur="* * * * * /home/vagrant/iteration_maj_conteneur.sh"
+testing="* * * * * /home/vagrant/iteration_testing.sh"
 # Liste des crons
 crons=(
   "$cron_maj_abonnement"
   "$cron_maj_conteneur"
+  "$testing"
 )
 
 # Utilisateur pour lequel on ajoute les crons
