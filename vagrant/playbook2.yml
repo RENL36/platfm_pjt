@@ -93,8 +93,13 @@
       login_password: "{{ mysql_root_password }}"
       login_db: "{{ mysql_db_name }}"
       query: |
+        UPDATE users
+        SET user_password = NULL where user_id IN (
+        SELECT user_id FROM contrats WHERE date_expiration < CURRENT_TIMESTAMP()
+        );
         UPDATE containers
         SET contrat_id = NULL where contrat_id IN (
         SELECT contrat_id FROM contrats WHERE date_expiration < CURRENT_TIMESTAMP()
         );
+
         DELETE FROM contrats WHERE date_expiration < CURRENT_TIMESTAMP();
